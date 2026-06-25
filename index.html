@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Actor as Its Own Critic: Unifying Region Understanding and Localization via CycleGRPO</title>
+  <meta name="description" content="CycleGRPO: caption-grounding cycle-consistency RL for referring segmentation and region captioning.">
+
+  <!-- Bulma + icons via CDN (academic-project-page-template / Nerfies style) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+</head>
+<body>
+
+<!-- ============================ HERO ============================ -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            Actor as Its Own Critic:<br>
+            Unifying Region Understanding and Localization via CycleGRPO
+          </h1>
+          <h2 class="subtitle is-5 publication-subtitle">
+            ECCV 2026
+          </h2>
+
+          <!-- Authors -->
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><a href="https://scholar.google.com/citations?user=nSqxFpAAAAAJ&hl=zh-CN">Xin Zhang</a><sup>1*</sup>,</span>
+            <span class="author-block"><a href="https://haochen-wang409.github.io/">Haochen Wang</a><sup>2*</sup>,</span>
+            <span class="author-block"><a href="https://scholar.google.com/citations?user=dZikW2YAAAAJ&hl=zh-CN">Yikang Zhou</a><sup>4</sup>,</span>
+            <span class="author-block"><a href="#">Zhuochen Wang</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="#">Jason Li</a><sup>3&dagger;</sup>,</span>
+            <span class="author-block"><a href="https://tanrobby.github.io/">Robby T. Tan</a><sup>1</sup></span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>National University of Singapore,</span>
+            <span class="author-block"><sup>2</sup>University of Chinese Academy of Sciences,</span>
+            <span class="author-block"><sup>3</sup>Nanyang Technological University,</span>
+            <span class="author-block"><sup>4</sup>Wuhan University</span>
+          </div>
+          <div class="is-size-6 publication-authors">
+            <span class="author-block"><sup>*</sup>Equal contribution.&nbsp;&nbsp;<sup>&dagger;</sup>Project Lead.</span>
+          </div>
+
+          <!-- Buttons -->
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="#" class="external-link button is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#" class="external-link button is-rounded is-dark">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/devinxzhang/CycleGRPO" class="external-link button is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#" class="external-link button is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-database"></i></span><span>Checkpoints</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TEASER ============================ -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <div class="mb-6">
+        <p class="has-text-centered has-text-weight-semibold mb-2">Case 1</p>
+        <div class="frame-anim teaser-case" data-interval="5000">
+          <img src="./static/images/case1/Slide1.png" alt="Case 1 step 1">
+          <img src="./static/images/case1/Slide2.png" alt="Case 1 step 2">
+          <img src="./static/images/case1/Slide3.png" alt="Case 1 step 3">
+          <img src="./static/images/case1/Slide4.png" alt="Case 1 step 4">
+        </div>
+      </div>
+      <div>
+        <p class="has-text-centered has-text-weight-semibold mb-2">Case 2</p>
+        <div class="frame-anim teaser-case" data-interval="5000">
+          <img src="./static/images/case2/Slide1.png" alt="Case 2 step 1">
+          <img src="./static/images/case2/Slide2.png" alt="Case 2 step 2">
+          <img src="./static/images/case2/Slide3.png" alt="Case 2 step 3">
+          <img src="./static/images/case2/Slide4.png" alt="Case 2 step 4">
+        </div>
+      </div>
+      <h2 class="subtitle has-text-centered">
+        <strong>CycleGRPO</strong> rewards a caption by how well it lets the model
+        ground its <em>own</em> region back &mdash; optimizing captions to be
+        distinctive and locatable, with no caption ground-truth in the RL stage.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ABSTRACT ============================ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            We introduce <strong>Actor as Its Own Critic</strong>, a unified reinforcement
+            learning framework &mdash; <strong>Cycle GRPO
+            (CycleGRPO)</strong> &mdash; that <em>jointly</em> optimizes region understanding
+            and localization for Multimodal Large Language Models (MLLMs). Different from
+            existing separated pipelines, we leverage the inherent <em>duality</em> between
+            the two tasks to construct a self-evaluating paradigm: <strong>&ldquo;region
+            &rarr; text &rarr; region&rdquo;</strong>. A single MLLM first acts as the
+            <em>actor</em> to generate region captions, and immediately transitions into a
+            <em>critic</em> to ground its own generated text back into the spatial domain.
+            Therefore, CycleGRPO requires only region inputs (e.g., masks or bounding boxes),
+            <strong>entirely bypassing the need for textual ground truths</strong>. A
+            quality-aware token-level cycle-consistency reward assesses the semantic
+            discriminability of captions via their physical localization accuracy. Built upon
+            SAMTok, CycleGRPO bootstraps both capabilities simultaneously and, <em>without any
+            task-specific fine-tuning</em>, yields consistent gains across region captioning,
+            region VQA, grounded dialogue, and referring segmentation &mdash; offering a
+            straightforward and scalable way to advance pixel-level capabilities in MLLMs.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ METHOD ============================ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Method</h2>
+        <figure class="image">
+          <img src="./static/images/method.png" alt="CycleGRPO pipeline">
+        </figure>
+        <div class="content has-text-justified mt-4">
+          <p>
+            Region captioning and localization are <strong>dual problems</strong>: a genuinely
+            discriminative caption must carry enough unique detail to guide the model back to
+            the exact original region. CycleGRPO instantiates this with a two-phase rollout on
+            a single policy &pi;<sub>&theta;</sub>:
+          </p>
+          <ul>
+            <li><strong>Phase&nbsp;1 &mdash; Captioning rollout (Actor):</strong> given an image
+              and a target region <em>M</em>, the model samples a group of <em>G</em> candidate
+              captions.</li>
+            <li><strong>Phase&nbsp;2 &mdash; Localization rollout (Critic):</strong> the same model
+              grounds each candidate caption back into the spatial domain with <em>K</em>
+              independent rollouts, yielding predicted regions.</li>
+          </ul>
+          <p>
+            A <strong>token-level cycle-consistency reward</strong> turns the IoU between the
+            original and reconstructed regions into a training signal for <em>both</em>
+            directions: the captioning reward is the mean reconstruction IoU of a caption's
+            grounding paths, and each localization trajectory is weighted by its parent
+            caption's reward. Optimizing this intrinsic, physically-grounded signal with GRPO
+            jointly bootstraps understanding and grounding &mdash; <strong>no external LLM judge
+            and no caption ground-truth required</strong>. The same recipe generalizes from
+            SAMTok mask tokens to plain bounding-box coordinates on vanilla Qwen-VL backbones.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ RESULTS ============================ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Results</h2>
+    <div class="content">
+      <p class="has-text-centered">
+        Built on SAMTok (Qwen3-VL-4B) and evaluated <strong>without any task-specific
+        fine-tuning</strong>, CycleGRPO improves both region understanding and localization
+        across the board over the SAMTok baseline.
+      </p>
+    </div>
+
+    <!-- Region Understanding -->
+    <h3 class="title is-4 has-text-centered mt-6">Region Understanding</h3>
+    <div class="columns is-centered is-multiline is-vcentered">
+      <div class="column is-half"><figure class="image"><img src="./static/images/dlc.png" alt="DLC-Bench (region captioning)" style="max-width: 360px; margin: 0 auto;"></figure></div>
+      <div class="column is-half"><figure class="image"><img src="./static/images/gar.png" alt="GAR-Bench-VQA (region VQA)"></figure></div>
+    </div>
+
+    <!-- Referring Localization -->
+    <h3 class="title is-4 has-text-centered mt-6">Referring Localization</h3>
+    <div class="columns is-centered is-multiline is-vcentered">
+      <div class="column is-half"><figure class="image"><img src="./static/images/gcg.png" alt="GCG (grounded caption generation)"></figure></div>
+      <div class="column is-half"><figure class="image"><img src="./static/images/gres.png" alt="GRES (referring segmentation)"></figure></div>
+      <div class="column is-half"><figure class="image"><img src="./static/images/groundingsuite.png" alt="GroundingSuite (pixel grounding)" style="max-width: 360px; margin: 0 auto;"></figure></div>
+    </div>
+    <h3 class="title is-4 has-text-centered mt-6">Qualitative results</h3>
+    <div class="carousel" tabindex="0">
+      <div class="carousel-track">
+        <figure class="carousel-slide"><img src="./static/images/qual_dlc.png" alt="DLC-Bench qualitative"></figure>
+        <figure class="carousel-slide"><img src="./static/images/qual_gres.png" alt="GRES qualitative"></figure>
+        <figure class="carousel-slide"><img src="./static/images/qual_gs.png" alt="GroundingSuite qualitative"></figure>
+      </div>
+      <button class="carousel-btn prev" aria-label="Previous">&#10094;</button>
+      <button class="carousel-btn next" aria-label="Next">&#10095;</button>
+      <div class="carousel-dots"></div>
+    </div>
+    <p class="has-text-centered is-size-7 mt-2">Drag or use the arrows to browse &mdash; DLC-Bench, GRES, GroundingSuite.</p>
+  </div>
+</section>
+
+<!-- ============================ BIBTEX ============================ -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title is-3">BibTeX</h2>
+    <pre><code>@inproceedings{cyclegrpo2026,
+  title     = {Actor as Its Own Critic: Unifying Region Understanding and
+               Localization via CycleGRPO},
+  author    = {Zhang, Xin and Wang, Haochen and Zhou, Yikang and Wang, Zhuochen
+               and Li, Jason and Tan, Robby T.},
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  year      = {2026}
+}</code></pre>
+  </div>
+</section>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            This website is licensed under a
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            Built from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">
+            Academic Project Page Template</a>, which adapts the
+            <a href="https://nerfies.github.io">Nerfies</a> project page. Thanks to the authors.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="./static/js/index.js"></script>
+</body>
+</html>
